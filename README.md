@@ -1,7 +1,6 @@
-
 <p align="center">
-  <img src="2026_assets/logo_acc.png" alt="Agencia Catastral de Cundinamarca" height="80" style="margin-right:25px;">
-  <img src="2026_assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="80">
+  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_acc.png" alt="ACC" height="70" style="margin-right:20px;">
+  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="70">
 </p>
 
 # Repositorio 2026 – Ciencia de Datos y Analítica Territorial  
@@ -28,8 +27,6 @@ Aquí se integran:
 
 - Python (Pandas, Matplotlib, Plotly)
 - Power BI
-- Tableau
-- QGIS
 - Google Colab
 - GitHub (control de versiones)
 - Word Automation (python-docx)
@@ -71,4 +68,6 @@ Entidad: Agencia Catastral de Cundinamarca
 ## 📌 Nota Final
 
 Este repositorio constituye un activo técnico institucional orientado al fortalecimiento de la gestión catastral y la toma de decisiones basadas en evidencia.
+
+Desarrollado por: Samuel Perez
 

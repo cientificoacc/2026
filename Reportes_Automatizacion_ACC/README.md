@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="assets/logo_acc.png" alt="ACC" height="70" style="margin-right:20px;">
-  <img src="assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="70">
+  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_acc.png" alt="ACC" height="70" style="margin-right:20px;">
+  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="70">
 </p>
 
 # Reportes de Trámites Catastrales (ACC) – Generación automática 2024–2025
@@ -24,8 +24,8 @@ Las tablas se insertan **debajo de los títulos** dentro de la plantilla institu
 
 - Cuenta de Google (para usar Google Colab)
 - Archivos de entrada:
-  - **Excel**: `Plantilla_Reporte_TuCatastro.xlsx` (contiene hoja `CRUDOS`)
-  - **Plantilla Word**: `Mpio_Informe_tramites_Catastral_ACC.docx`
+  - **Excel**: `Plantilla_Reporte_TuCatastro.xlsx` (contiene hoja `CRUDOS`) - Ver Carpeta (Inputs)
+  - **Plantilla Word**: `Mpio_Informe_tramites_Catastral_ACC.docx` - Ver Carpeta (Inputs)
 
 ---
 
