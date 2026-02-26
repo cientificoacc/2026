@@ -24,7 +24,7 @@ Las tablas se insertan **debajo de los títulos** dentro de la plantilla institu
 
 - Cuenta de Google (para usar Google Colab)
 - Archivos de entrada:
-  - **Excel**: `Plantilla_Reporte_TuCatastro.xlsx` (contiene hoja `CRUDOS`) - Ver Carpeta (Inputs) Descargable de reportes en "https://tramites.acc.gov.co/#/auth"
+  - **Excel**: `Plantilla_Reporte_TuCatastro.xlsx` (contiene hoja `CRUDOS`) - Ver Carpeta (Inputs) Descargable de reportes en (https://tramites.acc.gov.co/#/auth)
   - **Plantilla Word**: `Mpio_Informe_tramites_Catastral_ACC.docx` - Ver Carpeta (Inputs)
 
 ---
