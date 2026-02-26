@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_acc.png" alt="ACC" height="70" style="margin-right:20px;">
-  <img src="2026/Reportes_Automatizacion_ACC/assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="70">
+  <img src="assets/logo_acc.png" alt="ACC" height="70" style="margin-right:20px;">
+  <img src="assets/logo_gobernacion_cundinamarca.png" alt="Gobernación de Cundinamarca" height="70">
 </p>
 
 # Reportes de Trámites Catastrales (ACC) – Generación automática 2024–2025
