@@ -25,7 +25,7 @@ Aquí se integran:
 
 # 🛠 Tecnologías Utilizadas
 
-- Python (Pandas, Matplotlib, Plotly)
+- Python (Pandas, Matplotlib)
 - Power BI
 - Google Colab
 - GitHub (control de versiones)

@@ -7,10 +7,10 @@
 
 Este proyecto genera, **por municipio**, un informe en **Word (.docx)** con:
 
-- **Tabla 1**: Clasificación de radicados por estado (2024 vs 2025) + total general  
+- **Tabla 1**: Clasificación de radicados por estado (Periodo Seleccionado) + total general  
 - **Tabla 2**: Radicados por tipo y quién resuelve, con **subtotales jerárquicos** (Central / Territorio) + total general  
-- **Gráfica 1**: Radicados por mes (2024 vs 2025)  
-- **Gráfica 2**: Radicados por día de la semana (2024 vs 2025)  
+- **Gráfica 1**: Radicados por mes (Periodo Seleccionado)  
+- **Gráfica 2**: Radicados por día de la semana (Periodo Seleccionado)  
 - **Tabla 3**: Radicados resueltos/en proceso por año y resolución, con **subtotales jerárquicos por año y nivel** + total general  
 
 Las tablas se insertan **debajo de los títulos** dentro de la plantilla institucional y aplican formato:
@@ -71,7 +71,6 @@ En el código, asegúrate de tener:
 BASE_EXCEL = "/content/Plantilla_Reporte_TuCatastro.xlsx"
 PLANTILLA_WORD = "/content/Mpio_Informe_tramites_Catastral_ACC.docx"
 CARPETA_RAIZ = "/content/Reportes_ACC_2024_2025"
-ANIOS = [2024, 2025]
 ```
 
 ### 4.2 Ejecutar un municipio o todos
@@ -97,10 +96,12 @@ Para cada municipio se crea una carpeta:
 ```
 /content/Reportes_ACC_2024_2025/<MUNICIPIO>/
   01_Word/
-    <MUNICIPIO>_Informe_Final_ACC_2024_2025.docx
+    <MUNICIPIO>_Informe_Final_ACC_Periodo_Seleccionado.docx
   02_Graficas/
     Radicados_por_mes.png
     Radicados_por_dia.png
+  03_Pdf/
+    <MUNICIPIO>_Informe_Final_ACC_Periodo_Seleccionado.pdf
 ```
 
 ---
