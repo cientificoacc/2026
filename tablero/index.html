@@ -1,0 +1,484 @@
+<!doctype html>
+<!-- data-theme="light" fija el modo claro: el tablero no hereda el modo oscuro del sistema -->
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero MIPG · FURAG — Agencia Catastral de Cundinamarca</title>
+<meta name="description" content="Tablero de control del cierre de brechas FURAG 2025 de la Agencia Catastral de Cundinamarca.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────── identidad ACC / GOV.CO ───────────────────────── */
+:root{
+  color-scheme: light;
+  --azul:#0943B5;          /* azul institucional GOV.CO */
+  --azul-osc:#0C4266;
+  --azul-med:#0071BA;
+  --azul-claro:#E7EEF6;
+  --ocre:#E8A045;          /* regla bajo el menú del sitio oficial */
+  --tinta:#212529;
+  --tinta-2:#4C4C4C;
+  --tenue:#6B7684;
+  --linea:#D6DEE8;
+  --linea-2:#E8EDF3;
+  --fondo:#F4F6FA;
+  --sup:#FFFFFF;
+  --sup-2:#FAFBFD;
+  /* datos — validados con validate_palette.js sobre superficie #FFFFFF */
+  --st-bien:#0f8a3c;
+  --st-media:#d4b02e;
+  --st-alta:#dd6f22;
+  --st-critica:#b3261e;
+  --serie:#0943B5;
+  --serie-suave:#B9CCEC;
+  --sans:'Nunito Sans','Source Sans 3',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --azul:#6B9EFF; --azul-osc:#89B3FF; --azul-med:#6B9EFF; --azul-claro:#1B2440;
+    --ocre:#F0B060;
+    --tinta:#E8EAF0; --tinta-2:#C2C9D6; --tenue:#8B96A8;
+    --linea:#2A3346; --linea-2:#1E2637;
+    --fondo:#0B0F1A; --sup:#121826; --sup-2:#171F30;
+    --st-bien:#4cc57a; --st-media:#f5da70; --st-alta:#eb9330; --st-critica:#e1505c;
+    --serie:#6B9EFF; --serie-suave:#2B3E63;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --azul:#6B9EFF; --azul-osc:#89B3FF; --azul-med:#6B9EFF; --azul-claro:#1B2440;
+  --ocre:#F0B060;
+  --tinta:#E8EAF0; --tinta-2:#C2C9D6; --tenue:#8B96A8;
+  --linea:#2A3346; --linea-2:#1E2637;
+  --fondo:#0B0F1A; --sup:#121826; --sup-2:#171F30;
+  --st-bien:#4cc57a; --st-media:#f5da70; --st-alta:#eb9330; --st-critica:#e1505c;
+  --serie:#6B9EFF; --serie-suave:#2B3E63;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--tinta);font-family:var(--sans);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* ───────────────────────── encabezado ───────────────────────── */
+.gov{background:var(--azul);color:#fff;font-size:13px}
+.gov .cont{max-width:1280px;margin:0 auto;padding:9px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:16px}
+.gov strong{font-weight:800;letter-spacing:.06em}
+.marca{background:var(--sup);border-bottom:4px solid var(--ocre)}
+.marca .cont{max-width:1280px;margin:0 auto;padding:16px 20px;display:flex;
+  align-items:center;gap:16px 18px;flex-wrap:wrap}
+/* barra de logos institucionales, misma estructura del sitio oficial */
+.barra-logos-govco{display:flex;align-items:center;gap:14px;flex:none;min-width:0}
+.acc-logo-link{display:inline-flex;align-items:center;text-decoration:none}
+.acc-logo-link:focus-visible{outline:2px solid var(--azul);outline-offset:3px;border-radius:3px}
+.acc-logo-gob{height:clamp(32px,5vw,46px);width:auto;display:block}
+.acc-logo-header{height:clamp(30px,4.6vw,42px);width:auto;display:block}
+.acc-logo-divider{width:1px;height:36px;background:var(--linea);flex:none}
+.titulos{min-width:0}
+.marca h1{margin:0;font-size:clamp(16px,2.2vw,19px);font-weight:800;line-height:1.2;
+  color:var(--azul-osc)}
+.marca p{margin:2px 0 0;font-size:13px;color:var(--tenue)}
+/* el conmutador de contraste queda oculto: el tablero abre siempre en modo claro */
+.tema{display:none}
+button.mini{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--linea);
+  border-radius:20px;background:var(--sup-2);color:var(--tinta-2);cursor:pointer}
+button.mini:hover{border-color:var(--azul);color:var(--azul)}
+button.mini:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px 90px}
+
+/* ───────────────────────── portada ───────────────────────── */
+.portada{padding:34px 0 26px;border-bottom:1px solid var(--linea)}
+/* los textos ocupan el ancho del contenedor, igual que los paneles */
+.portada h2{margin:0 0 10px;font-size:clamp(24px,3.6vw,38px);line-height:1.12;
+  font-weight:800;letter-spacing:-.02em;color:var(--azul-osc);width:100%}
+.portada p{margin:0;width:100%;color:var(--tinta-2);font-size:16.5px}
+.ruta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.ruta a{text-decoration:none;font-size:13.5px;font-weight:600;color:var(--azul);
+  background:var(--azul-claro);border-radius:20px;padding:6px 14px;border:1px solid transparent}
+.ruta a:hover{border-color:var(--azul)}
+.ruta a:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+/* ───────────────────────── filtro ───────────────────────── */
+.filtro{position:sticky;top:0;z-index:30;background:var(--sup);border-bottom:1px solid var(--linea);
+  box-shadow:0 1px 0 rgba(0,0,0,.03);margin:0 -20px;padding:0 20px}
+.filtro .cont{max-width:1280px;margin:0 auto;padding:12px 0;display:flex;
+  align-items:center;gap:14px;flex-wrap:wrap}
+.filtro label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tenue)}
+select{font:inherit;font-size:15px;font-weight:600;padding:9px 14px;border:2px solid var(--azul);
+  border-radius:6px;background:var(--sup);color:var(--tinta);min-width:270px;cursor:pointer}
+select:focus-visible{outline:2px solid var(--ocre);outline-offset:1px}
+.ambito{font-size:13.5px;color:var(--tenue)}
+.ambito b{color:var(--tinta);font-weight:700}
+
+/* ───────────────────────── indicadores ───────────────────────── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
+  background:var(--linea);border:1px solid var(--linea);border-radius:8px;overflow:hidden;margin:24px 0}
+.kpi{background:var(--sup);padding:16px 18px}
+.kpi .v{font-size:30px;font-weight:800;line-height:1.05;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;color:var(--azul-osc)}
+.kpi .v.alerta{color:var(--st-critica)}
+.kpi .e{font-size:12.5px;color:var(--tenue);margin-top:4px;line-height:1.35}
+
+/* ───────────────────────── actos ───────────────────────── */
+.acto{margin-top:52px;scroll-margin-top:76px}
+.acto-cab{display:flex;gap:16px;align-items:flex-start;padding-bottom:14px;
+  border-bottom:3px solid var(--azul)}
+.num{flex:none;width:40px;height:40px;border-radius:8px;background:var(--azul);color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:19px}
+.acto-cab h3{margin:0;font-size:clamp(19px,2.6vw,22px);font-weight:800;letter-spacing:-.015em;
+  color:var(--azul-osc);width:100%}
+.acto-cab p{margin:3px 0 0;color:var(--tenue);font-size:14.5px;width:100%}
+.acto-cab>div{min-width:0;flex:1}
+
+.panel{background:var(--sup);border:1px solid var(--linea);border-radius:8px;padding:20px 22px;margin-top:18px}
+.panel h4{margin:0 0 3px;font-size:16px;font-weight:700;color:var(--tinta);width:100%}
+.panel .sub{margin:0 0 16px;font-size:13px;color:var(--tenue);width:100%}
+.dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px;margin-top:18px}
+.dos>.panel{margin-top:0}
+
+/* ───────────────────────── gráficos ───────────────────────── */
+.viz{width:100%;overflow-x:auto}
+svg.g{display:block;width:100%;height:auto;font-family:var(--sans)}
+svg.g text{fill:var(--tinta-2)}
+svg.g .eje{fill:var(--tenue);font-size:11px}
+svg.g .val{font-size:11.5px;font-weight:700;fill:var(--tinta);font-variant-numeric:tabular-nums}
+svg.g .rot{font-size:12px;fill:var(--tinta-2)}
+svg.g .rejilla{stroke:var(--linea-2);stroke-width:1}
+svg.g rect.marca-d{rx:3}
+svg.g .hit{fill:transparent;cursor:pointer}
+svg.g g.item:hover rect.marca-d{stroke:var(--tinta);stroke-width:2}
+
+.leyenda{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 14px;font-size:13px}
+.leyenda span{display:inline-flex;align-items:center;gap:7px;color:var(--tinta-2)}
+.leyenda i{width:12px;height:12px;border-radius:3px;flex:none}
+.tip{position:fixed;pointer-events:none;background:var(--sup);color:var(--tinta);
+  border:1px solid var(--linea);border-radius:6px;padding:8px 11px;font-size:13px;
+  box-shadow:0 6px 20px rgba(10,20,40,.16);opacity:0;transition:opacity .12s;z-index:60;max-width:290px}
+.tip b{display:block;margin-bottom:3px}
+.tip .n{font-variant-numeric:tabular-nums}
+
+/* ───────────────────────── tablas ───────────────────────── */
+.tabla-wrap{overflow-x:auto;border:1px solid var(--linea);border-radius:6px;margin-top:14px}
+table{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
+th{position:sticky;top:0;background:var(--sup-2);text-align:left;font-size:11px;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--tenue);padding:10px 12px;
+  border-bottom:1px solid var(--linea);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--linea-2);vertical-align:top;color:var(--tinta-2)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--sup-2)}
+td.cod{font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--tinta)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td .clamp{display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;max-width:46ch}
+td .sub-cel{display:block;color:var(--tenue);font-size:12px;margin-top:2px}
+td.dep{font-size:12.5px;color:var(--tinta-2);min-width:10.5rem}
+.busca{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+input[type=search]{font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--linea);
+  border-radius:6px;background:var(--sup);color:var(--tinta);min-width:250px;flex:1}
+input[type=search]:focus-visible{outline:2px solid var(--azul);outline-offset:1px}
+.conteo{font-size:13px;color:var(--tenue);font-variant-numeric:tabular-nums}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;
+  padding:2px 9px;border-radius:20px;white-space:nowrap;border:1px solid currentColor}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.p-critica{color:var(--st-critica)} .p-alta{color:var(--st-alta)}
+.p-media{color:var(--st-media)} .p-bien{color:var(--st-bien)}
+.vacio{padding:34px 18px;text-align:center;color:var(--tenue);font-size:14.5px}
+
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--linea);
+  color:var(--tenue);font-size:12.5px}
+footer a{color:var(--azul)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media print{
+  .filtro,.tema,.ruta{display:none}
+  body{background:#fff}
+  .acto{break-inside:avoid}
+}
+
+/* ═══════════════ adaptación a pantallas pequeñas ═══════════════ */
+
+/* tablet en vertical — iPad */
+@media (max-width:1024px){
+  .dos{grid-template-columns:1fr}
+  .wrap{padding:0 18px 70px}
+  .filtro{margin:0 -18px;padding:0 18px}
+  /* 3 columnas: los 6 indicadores llenan dos filas exactas, sin celda vacía */
+  .kpis{grid-template-columns:repeat(3,1fr)}
+}
+
+/* el separador y el logo de la Gobernación se ocultan igual que en el sitio oficial */
+@media (max-width:767.98px){
+  .solo-md{display:none!important}
+  .barra-logos-govco{gap:0}
+}
+
+/* teléfono — iPhone */
+@media (max-width:640px){
+  body{font-size:15px}
+  .gov .cont{padding:8px 16px;font-size:12px}
+  .gov .cont span{display:none}
+  .marca .cont{padding:14px 16px;gap:12px}
+  .titulos{flex:1 1 100%}
+  .wrap{padding:0 16px 60px}
+  .filtro{margin:0 -16px;padding:0 16px}
+  .filtro .cont{flex-direction:column;align-items:stretch;gap:8px;padding:10px 0}
+  select{min-width:0;width:100%}
+  .ambito{font-size:12.5px}
+  .portada{padding:26px 0 22px}
+  .portada p{font-size:15.5px}
+  .ruta{gap:6px}
+  .ruta a{font-size:12.5px;padding:5px 11px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{padding:13px 14px}
+  .kpi .v{font-size:24px}
+  .kpi .e{font-size:11.5px}
+  .acto{margin-top:38px;scroll-margin-top:64px}
+  .acto-cab{gap:12px}
+  .num{width:34px;height:34px;font-size:17px}
+  .panel{padding:16px 15px;border-radius:6px}
+  .busca{gap:8px}
+  input[type=search]{min-width:0;width:100%;flex:1 1 100%}
+  .conteo{flex:1 1 100%}
+  td .clamp{max-width:34ch}
+  .leyenda{gap:9px 12px;font-size:12px}
+}
+
+/* pantallas muy angostas — por debajo del iPhone SE */
+@media (max-width:359px){
+  .kpis{grid-template-columns:1fr}
+  .acc-logo-header{height:26px}
+  .panel{padding:14px 12px}
+}
+
+/* en pantallas táctiles el gráfico se lee tocando: el globo sigue al dedo */
+@media (hover:none){
+  svg.g g.item:hover rect.marca-d{stroke:none}
+}
+</style>
+</head>
+<body>
+
+<div class="gov"><div class="cont">
+  <strong>GOV.CO</strong>
+  <span>Gobernación de Cundinamarca</span>
+</div></div>
+
+<header class="marca"><div class="cont">
+  <div class="barra-logos-govco acc-logos-group">
+    <a href="https://www.cundinamarca.gov.co" target="_blank" rel="noopener noreferrer"
+       aria-label="Gobernación de Cundinamarca" class="acc-logo-link solo-md">
+      <img src="https://www.acc.gov.co/assets/logos/LogoGOB.png" width="1870" height="536"
+           alt="Gobernación de Cundinamarca" class="acc-logo-gob" loading="eager">
+    </a>
+    <span aria-hidden="true" class="acc-logo-divider solo-md"></span>
+    <a href="https://www.acc.gov.co/inicio" target="_blank" rel="noopener noreferrer"
+       aria-label="Agencia Catastral de Cundinamarca — ir a inicio" class="acc-logo-link">
+      <img src="https://www.acc.gov.co/assets/logos/LogoACC.png" width="402" height="127"
+           alt="Agencia Catastral de Cundinamarca" class="acc-logo-header" loading="eager">
+    </a>
+  </div>
+  <div class="titulos">
+    <h1>Control FURAG/MIPG de la ACC</h1>
+    <p>Modelo Integrado de Planeación y Gestión</p>
+  </div>
+  <div class="tema">
+    <button class="mini" id="btnTema" type="button">Contraste</button>
+    <button class="mini" id="btnImprimir" type="button">Imprimir</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<section class="portada">
+  <h2>Del diagnóstico 2025 al cierre de brechas 2026</h2>
+  <p>El FURAG es el formulario con el que el Departamento Administrativo de la Función Pública
+  mide cómo gestiona cada entidad del Estado. Este tablero recorre en cuatro pasos qué nos
+  preguntaron, qué respondimos, dónde quedamos cortos y qué vamos a hacer durante 2026 para
+  cerrarlo. Elija su dependencia arriba y todo el tablero se ajusta a lo que le corresponde.</p>
+  <nav class="ruta" aria-label="Ir a un acto">
+    <a href="#acto1">1 · Cómo estamos organizados</a>
+    <a href="#acto2">2 · Qué nos preguntó el DAFP</a>
+    <a href="#acto3">3 · Qué respondimos</a>
+    <a href="#acto4">4 · Qué vamos a hacer</a>
+  </nav>
+</section>
+
+<div class="filtro"><div class="cont">
+  <label for="selRes">Dependencia responsable</label>
+  <select id="selRes" aria-label="Filtrar por dependencia responsable">
+    <option value="">Toda la Agencia</option>
+  </select>
+  <span class="ambito" id="ambito"></span>
+</div></div>
+
+<div class="kpis" id="kpis"></div>
+
+<!-- ═══════════════ ACTO 1 ═══════════════ -->
+<section class="acto" id="acto1">
+  <div class="acto-cab">
+    <span class="num">1</span>
+    <div>
+      <h3>Cómo está organizada la entidad</h3>
+      <p>El MIPG divide la gestión pública en 7 dimensiones y 19 políticas. Todo lo que sigue
+      —preguntas, respuestas y acciones— cuelga de esa estructura.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h4>Las 7 dimensiones y su peso en el formulario</h4>
+    <p class="sub" id="sub1">Número de preguntas del FURAG que corresponden a cada dimensión.</p>
+    <div class="viz"><svg class="g" id="gDim" role="img" aria-labelledby="tDim"></svg></div>
+    <p class="sr" id="tDim">Preguntas del FURAG por dimensión del MIPG</p>
+  </div>
+  <div class="panel">
+    <h4>Políticas de gestión</h4>
+    <p class="sub">Cada política tiene un líder nacional que define las reglas y una dependencia
+    de la Agencia que responde por ella.</p>
+    <div class="tabla-wrap"><table id="tabPol">
+      <thead><tr><th>Política</th><th>Dimensión</th><th>Líder nacional</th>
+        <th class="n">Preguntas</th><th class="n">Con brecha</th></tr></thead>
+      <tbody></tbody></table></div>
+  </div>
+</section>
+
+<!-- ═══════════════ ACTO 2 ═══════════════ -->
+<section class="acto" id="acto2">
+  <div class="acto-cab">
+    <span class="num">2</span>
+    <div>
+      <h3>Qué nos preguntó el DAFP</h3>
+      <p>El formulario de la vigencia 2025 trajo 452 preguntas. Unas piden marcar una sola
+      casilla, otras varias, y algunas exigen adjuntar un soporte documental.</p>
+    </div>
+  </div>
+  <div class="dos">
+    <div class="panel">
+      <h4>Preguntas por política</h4>
+      <p class="sub">Las diez políticas con más preguntas.</p>
+      <div class="viz"><svg class="g" id="gPol" role="img" aria-labelledby="tPol"></svg></div>
+      <p class="sr" id="tPol">Número de preguntas por política</p>
+    </div>
+    <div class="panel">
+      <h4>Cómo se responde cada pregunta</h4>
+      <p class="sub">Tipo de respuesta que exige el formulario.</p>
+      <div class="viz"><svg class="g" id="gTipo" role="img" aria-labelledby="tTipo"></svg></div>
+      <p class="sr" id="tTipo">Preguntas por tipo de respuesta</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ACTO 3 ═══════════════ -->
+<section class="acto" id="acto3">
+  <div class="acto-cab">
+    <span class="num">3</span>
+    <div>
+      <h3>Qué respondimos y dónde quedamos cortos</h3>
+      <p>Cada pregunta ofrece un conjunto de buenas prácticas. Una brecha aparece cuando la
+      Agencia no acreditó todas: puede ser un incumplimiento total, un avance parcial, o una
+      pregunta que se envió sin responder.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h4>Resultado de las respuestas de 2025</h4>
+    <p class="sub" id="sub3">Cada pregunta clasificada según lo que la Agencia acreditó.</p>
+    <div class="leyenda" id="legEstado"></div>
+    <div class="viz"><svg class="g" id="gEstado" role="img" aria-labelledby="tEstado"></svg></div>
+    <p class="sr" id="tEstado">Estado de las respuestas por política</p>
+  </div>
+  <div class="dos">
+    <div class="panel">
+      <h4>Soportes documentales</h4>
+      <p class="sub">Preguntas que exigen evidencia y si se aportó el enlace.</p>
+      <div class="viz"><svg class="g" id="gEvid" role="img" aria-labelledby="tEvid"></svg></div>
+      <p class="sr" id="tEvid">Cobertura de evidencia documental</p>
+    </div>
+    <div class="panel">
+      <h4>Prioridad de las brechas</h4>
+      <p class="sub">Qué tan urgente es cerrar cada una.</p>
+      <div class="viz"><svg class="g" id="gPrio" role="img" aria-labelledby="tPrio"></svg></div>
+      <p class="sr" id="tPrio">Brechas por prioridad</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h4>Detalle de las brechas</h4>
+    <p class="sub">Cada fila es una pregunta donde quedamos cortos. Busque por código, política
+    o por una palabra del enunciado.</p>
+    <div class="busca">
+      <input type="search" id="bBrecha" placeholder="Buscar en las brechas…" aria-label="Buscar en las brechas">
+      <span class="conteo" id="cBrecha"></span>
+    </div>
+    <div class="tabla-wrap"><table id="tabBrecha">
+      <thead><tr><th>Código Pregunta</th><th>Prioridad</th><th>Dependencia</th><th>Pregunta</th>
+        <th class="n">Acreditado</th><th>Qué falta</th></tr></thead>
+      <tbody></tbody></table></div>
+  </div>
+</section>
+
+<!-- ═══════════════ ACTO 4 ═══════════════ -->
+<section class="acto" id="acto4">
+  <div class="acto-cab">
+    <span class="num">4</span>
+    <div>
+      <h3>Qué vamos a hacer al respecto</h3>
+      <p>Cada brecha tiene una acción de mejora con responsable, metas mensuales de agosto a
+      diciembre de 2026 y fecha de cierre el 31 de diciembre, para que el resultado se pueda
+      acreditar ante el DAFP en 2027.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h4>Cronograma de reporte, agosto a diciembre de 2026</h4>
+    <p class="sub">Cuántas acciones debe reportar cada mes. Las de prioridad alta arrancan en
+    agosto, las medias-altas en septiembre y las medias en octubre.</p>
+    <div class="leyenda" id="legPrio"></div>
+    <div class="viz"><svg class="g" id="gCrono" role="img" aria-labelledby="tCrono"></svg></div>
+    <p class="sr" id="tCrono">Acciones a reportar por mes y prioridad</p>
+  </div>
+  <div class="panel">
+    <h4>Plan de acción</h4>
+    <p class="sub">Las acciones que le corresponden, de la más urgente a la menos.</p>
+    <div class="busca">
+      <input type="search" id="bAccion" placeholder="Buscar en las acciones…" aria-label="Buscar en las acciones">
+      <span class="conteo" id="cAccion"></span>
+    </div>
+    <div class="tabla-wrap"><table id="tabAccion">
+      <thead><tr><th>Acción</th><th>Prioridad</th><th>Dependencia</th><th>Qué hay que hacer</th>
+        <th>Código Pregunta</th><th class="n">Cortes</th></tr></thead>
+      <tbody></tbody></table></div>
+  </div>
+</section>
+
+<footer>
+  <p><b>Fuente:</b> formulario FURAG diligenciado por la Agencia para la vigencia 2025
+  (corte del <span id="fCorte"></span>) y plan de mejoramiento MIPG.
+  El porcentaje de prácticas acreditadas es un <b>indicador interno de cobertura</b>, no el
+  puntaje oficial del DAFP: la Función Pública no publica los pesos por pregunta. <b>Desarrollado:</b> Gerencia Tecnica - ACC. <b>Soporte:</b> samuel.perez@acc.gov.co</p>
+  <p id="fNota"></p>
+</footer>
+
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+/* Si algo falla al cargar, el usuario ve un aviso en vez de un tablero vacío. */
+window.__ERR = null;
+window.addEventListener('error', function (e) {
+  window.__ERR = (e.message || 'error') + ' · ' + (e.filename || '') + ':' + (e.lineno || 0);
+  var k = document.getElementById('kpis');
+  if (k && !k.children.length) {
+    k.innerHTML = '<div class="kpi" style="grid-column:1/-1">' +
+      '<div class="v alerta">No se pudo cargar el tablero</div>' +
+      '<div class="e">Detalle técnico: ' + window.__ERR + '</div></div>';
+  }
+});
+</script>
+<script src="datos.js"></script>
+<script src="tablero.js"></script>
+</body>
+</html>
