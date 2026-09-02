@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruta 100 FURAG-ACC</title>
+<meta name="description" content="Simulador de diligenciamiento del FURAG de la Agencia Catastral de Cundinamarca.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* ───── identidad ACC / GOV.CO — mismos tokens del tablero MIPG · FURAG ───── */
+:root{
+  color-scheme: light;
+  --azul:#0943B5; --azul-osc:#0C4266; --azul-med:#0071BA; --azul-claro:#E7EEF6;
+  --ocre:#E8A045;
+  --tinta:#212529; --tinta-2:#4C4C4C; --tenue:#6B7684;
+  --linea:#D6DEE8; --linea-2:#E8EDF3;
+  --fondo:#F4F6FA; --sup:#FFFFFF; --sup-2:#FAFBFD;
+  --st-bien:#0f8a3c; --st-media:#d4b02e; --st-alta:#dd6f22; --st-critica:#b3261e;
+  --serie:#0943B5; --serie-suave:#B9CCEC;
+  --sans:'Nunito Sans','Source Sans 3',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:10px; --sombra:0 1px 2px rgba(12,66,102,.06),0 1px 3px rgba(12,66,102,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--tinta);font-family:var(--sans);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+[hidden]{display:none!important}
+
+/* ───────────────────────── encabezado ───────────────────────── */
+.gov{background:var(--azul);color:#fff;font-size:13px}
+.gov .cont{max-width:1280px;margin:0 auto;padding:9px 20px;display:flex;
+  align-items:center;justify-content:space-between;gap:16px}
+.gov strong{font-weight:800;letter-spacing:.06em}
+.marca{background:var(--sup);border-bottom:4px solid var(--ocre)}
+.marca .cont{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;
+  align-items:center;gap:14px 18px;flex-wrap:wrap}
+.barra-logos-govco{display:flex;align-items:center;gap:14px;flex:none;min-width:0}
+.acc-logo-link{display:inline-flex;align-items:center;text-decoration:none}
+.acc-logo-link:focus-visible{outline:2px solid var(--azul);outline-offset:3px;border-radius:3px}
+.acc-logo-gob{height:clamp(30px,5vw,44px);width:auto;display:block}
+.acc-logo-header{height:clamp(28px,4.6vw,40px);width:auto;display:block}
+.acc-logo-divider{width:1px;height:34px;background:var(--linea);flex:none}
+.titulos{min-width:0;flex:1 1 240px}
+.marca h1{margin:0;font-size:clamp(15px,2.2vw,18px);font-weight:800;line-height:1.2;color:var(--azul-osc)}
+.marca p{margin:2px 0 0;font-size:13px;color:var(--tenue)}
+.sesion{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+.sesion .quien{text-align:right;line-height:1.25;min-width:0}
+.sesion .quien b{display:block;font-size:14px;color:var(--azul-osc)}
+.sesion .quien span{font-size:12px;color:var(--tenue)}
+@media (max-width:640px){.solo-md{display:none}.sesion{margin-left:0;width:100%}
+  .sesion .quien{text-align:left}}
+
+button{font:inherit}
+.btn{font-size:14px;font-weight:700;padding:9px 16px;border-radius:8px;border:1px solid var(--azul);
+  background:var(--azul);color:#fff;cursor:pointer;line-height:1.2}
+.btn:hover{background:#073795}
+.btn:focus-visible,.mini:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--azul);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.mini{font-size:13px;font-weight:600;padding:7px 13px;border:1px solid var(--linea);border-radius:20px;
+  background:var(--sup-2);color:var(--tinta-2);cursor:pointer}
+.mini:hover{border-color:var(--azul);color:var(--azul)}
+.mini.on{background:var(--azul);border-color:var(--azul);color:#fff}
+.mini.ok{border-color:var(--st-bien);color:var(--st-bien)}
+.mini.ok:hover{background:var(--st-bien);color:#fff}
+.mini.no{border-color:var(--st-critica);color:var(--st-critica)}
+.mini.no:hover{background:var(--st-critica);color:#fff}
+
+input[type=text],input[type=password],input[type=number],input[type=url],input[type=search],select,textarea{
+  font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--linea);border-radius:8px;
+  background:var(--sup);color:var(--tinta);width:100%;max-width:100%}
+textarea{resize:vertical;min-height:84px}
+label{font-size:14px;font-weight:600;color:var(--tinta-2)}
+
+/* ───────────────────────── login ───────────────────────── */
+.login-wrap{max-width:1280px;margin:0 auto;padding:48px 20px 90px;display:grid;
+  grid-template-columns:1fr 380px;gap:40px;align-items:start}
+@media (max-width:860px){.login-wrap{grid-template-columns:1fr;padding-top:28px;gap:26px}}
+.login-wrap h2{margin:0 0 12px;font-size:clamp(24px,3.6vw,36px);line-height:1.14;font-weight:800;
+  letter-spacing:-.02em;color:var(--azul-osc)}
+.login-wrap .lead{margin:0 0 20px;color:var(--tinta-2);font-size:16.5px}
+.pasos{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pasos li{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r);padding:12px 14px;
+  font-size:14.5px;color:var(--tinta-2);display:flex;gap:11px;align-items:flex-start}
+.pasos li b{color:var(--azul-osc)}
+.pasos .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--azul-claro);color:var(--azul);
+  font-size:13px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.tarjeta-login{background:var(--sup);border:1px solid var(--linea);border-radius:14px;padding:24px;
+  box-shadow:var(--sombra)}
+.tarjeta-login h3{margin:0 0 4px;font-size:19px;color:var(--azul-osc);font-weight:800}
+.tarjeta-login p.sub{margin:0 0 18px;font-size:13.5px;color:var(--tenue)}
+.campo{margin-bottom:14px}
+.campo label{display:block;margin-bottom:5px}
+.error{background:#FCEDEC;border:1px solid var(--st-critica);color:#8d1e18;border-radius:8px;
+  padding:9px 12px;font-size:14px;margin-bottom:14px}
+.aviso{background:#FFF7EA;border:1px solid var(--ocre);border-radius:var(--r);padding:12px 14px;
+  font-size:13.5px;color:#6a4508;margin-top:18px}
+.aviso b{color:#4d3105}
+
+/* ───────────────────────── shell de la app ───────────────────────── */
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px 90px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0 0}
+.barra{position:sticky;top:0;z-index:30;background:var(--sup);border-bottom:1px solid var(--linea);
+  margin:0 -20px 18px;padding:12px 20px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.barra .cont{max-width:1280px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.barra label{font-size:13px;color:var(--tenue);font-weight:700}
+.barra select,.barra input[type=search]{width:auto;min-width:170px;flex:1 1 170px;max-width:340px}
+.conteo{font-size:13px;color:var(--tenue);margin-left:auto}
+
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:6px 0 22px}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r);padding:14px;
+  box-shadow:var(--sombra)}
+.kpi .v{font-size:26px;font-weight:800;line-height:1.1;color:var(--azul-osc)}
+.kpi .e{font-size:12.5px;color:var(--tenue);margin-top:3px}
+.kpi.bien .v{color:var(--st-bien)} .kpi.mal .v{color:var(--st-critica)}
+.kpi.pend .v{color:var(--st-alta)}
+
+.panel{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r);padding:18px 18px 20px;
+  box-shadow:var(--sombra);margin-bottom:18px}
+.panel h3{margin:0 0 3px;font-size:17px;color:var(--azul-osc);font-weight:800}
+.panel p.sub{margin:0 0 14px;font-size:13.5px;color:var(--tenue)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:900px){.dos{grid-template-columns:1fr}}
+
+/* barras horizontales en HTML puro (sin librerías) */
+.barras{display:grid;gap:9px}
+.fila-b{display:grid;grid-template-columns:minmax(120px,34%) 1fr auto;gap:10px;align-items:center;font-size:13.5px}
+.fila-b .et{color:var(--tinta-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pista{background:var(--linea-2);border-radius:5px;height:16px;display:flex;overflow:hidden}
+.pista i{display:block;height:100%}
+.fila-b .n{font-variant-numeric:tabular-nums;color:var(--tenue);font-size:12.5px;min-width:52px;text-align:right}
+.leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--tinta-2);margin-bottom:12px}
+.leyenda span{display:inline-flex;align-items:center;gap:6px}
+.leyenda i{width:11px;height:11px;border-radius:3px;display:block}
+
+/* ───────────────────────── tarjeta de pregunta ───────────────────────── */
+.preguntas{display:grid;gap:14px}
+.q{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r);box-shadow:var(--sombra);
+  overflow:hidden}
+.q.rechazado{border-left:4px solid var(--st-critica)}
+.q.aprobado{border-left:4px solid var(--st-bien)}
+.q.pendiente{border-left:4px solid var(--st-media)}
+.q.borrador{border-left:4px solid var(--linea)}
+.q-cab{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;
+  border-bottom:1px solid var(--linea-2);background:var(--sup-2)}
+.q-cab .cod{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--azul);
+  background:var(--azul-claro);border-radius:6px;padding:3px 8px;flex:none}
+.q-cab .meta{font-size:12.5px;color:var(--tenue);flex:1 1 220px;min-width:0}
+.q-cab .meta b{display:block;color:var(--tinta-2);font-size:13px;font-weight:700}
+.pill{font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:20px;
+  padding:4px 11px;flex:none;white-space:nowrap}
+.p-borrador{background:var(--linea-2);color:var(--tinta-2)}
+.p-pendiente{background:#FBF3D6;color:#6b5504}
+.p-aprobado{background:#E3F5E9;color:#0b6b2e}
+.p-rechazado{background:#FCEDEC;color:#8d1e18}
+.p-tipo{background:var(--azul-claro);color:var(--azul-osc);text-transform:none;letter-spacing:0;font-weight:700}
+.q-cuerpo{padding:16px}
+.q-enun{margin:0 0 4px;font-size:15.5px;font-weight:700;color:var(--tinta);line-height:1.45}
+.q-nota{margin:0 0 14px;font-size:13px;color:var(--tenue);font-style:italic}
+.opciones{display:grid;gap:8px;margin:0 0 8px}
+.op{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border:1px solid var(--linea-2);
+  border-radius:8px;background:var(--sup-2);font-size:14.5px;cursor:pointer}
+.op:hover{border-color:var(--serie-suave)}
+.op input{margin:4px 0 0;flex:none;width:17px;height:17px;accent-color:var(--azul)}
+.op .txt{flex:1;min-width:0}
+.op .extra{display:block;margin-top:7px}
+.op .extra input{width:100%}
+.op.marcada{border-color:var(--azul);background:var(--azul-claro)}
+.op-num{display:grid;grid-template-columns:1fr 130px;gap:10px;align-items:center;padding:9px 11px;
+  border:1px solid var(--linea-2);border-radius:8px;background:var(--sup-2);font-size:14.5px}
+@media (max-width:600px){.op-num{grid-template-columns:1fr}}
+.solo-lectura .op{cursor:default}
+.tabla-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--linea-2);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--linea-2);vertical-align:middle}
+thead th{background:var(--sup-2);color:var(--azul-osc);font-weight:800;font-size:12.5px;
+  text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+td.c{text-align:center}
+.matriz td.c input{width:18px;height:18px;accent-color:var(--azul)}
+
+.bloque{margin-top:16px;padding-top:14px;border-top:1px dashed var(--linea)}
+.bloque h4{margin:0 0 8px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--tenue)}
+.evi-lista{display:grid;gap:8px;margin-bottom:10px}
+.evi{display:flex;gap:10px;align-items:center;padding:9px 11px;border:1px solid var(--linea-2);
+  border-radius:8px;background:var(--sup-2);font-size:14px}
+.evi .nom{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.evi a{color:var(--azul);font-weight:600}
+.evi .f{font-size:12px;color:var(--tenue);flex:none}
+.evi-form{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;align-items:end}
+@media (max-width:760px){.evi-form{grid-template-columns:1fr}}
+.obs{background:#FCEDEC;border:1px solid #F0C7C4;border-radius:8px;padding:11px 13px;font-size:14px;
+  color:#7a1b16;margin-top:14px}
+.obs b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.obs .meta{font-size:12px;color:#9a4a44;margin-top:6px}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.acciones .msg{font-size:13px;color:var(--st-bien);font-weight:700}
+.vacio{background:var(--sup);border:1px dashed var(--linea);border-radius:var(--r);padding:34px 20px;
+  text-align:center;color:var(--tenue)}
+
+/* ───────────────────────── modal ───────────────────────── */
+.velo{position:fixed;inset:0;background:rgba(12,66,102,.45);display:grid;place-items:center;z-index:80;padding:18px}
+.modal{background:var(--sup);border-radius:14px;max-width:540px;width:100%;padding:22px;
+  box-shadow:0 18px 44px rgba(12,66,102,.28);max-height:90vh;overflow:auto}
+.modal h3{margin:0 0 4px;font-size:19px;color:var(--azul-osc);font-weight:800}
+.modal p.sub{margin:0 0 16px;font-size:13.5px;color:var(--tenue)}
+.modal .pie{display:flex;gap:9px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.modal .err{color:var(--st-critica);font-size:13px;font-weight:700;margin-top:7px}
+
+.pie-sitio{max-width:1280px;margin:0 auto;padding:22px 20px 40px;border-top:1px solid var(--linea);
+  font-size:12.5px;color:var(--tenue)}
+.pie-sitio a{color:var(--azul)}
+</style>
+</head>
+<body>
+
+<div class="gov"><div class="cont">
+  <span><strong>GOV.CO</strong></span>
+  <span class="solo-md">Agencia Catastral de Cundinamarca</span>
+</div></div>
+
+<header class="marca"><div class="cont">
+  <div class="barra-logos-govco">
+    <a href="https://www.cundinamarca.gov.co" target="_blank" rel="noopener"
+       aria-label="Gobernación de Cundinamarca" class="acc-logo-link solo-md">
+      <img src="https://www.acc.gov.co/assets/logos/LogoGOB.png"
+           alt="Gobernación de Cundinamarca" class="acc-logo-gob" loading="eager">
+    </a>
+    <span aria-hidden="true" class="acc-logo-divider solo-md"></span>
+    <a href="https://www.acc.gov.co" target="_blank" rel="noopener"
+       aria-label="Agencia Catastral de Cundinamarca" class="acc-logo-link">
+      <img src="https://www.acc.gov.co/assets/logos/LogoACC.png"
+           alt="Agencia Catastral de Cundinamarca" class="acc-logo-header" loading="eager">
+    </a>
+  </div>
+  <div class="titulos">
+    <h1>Ruta 100 FURAG ACC · Diligenciamiento y revisión de evidencias</h1>
+    <p id="subtitulo">Agencia Catastral de Cundinamarca — Gerencia Técnica</p>
+  </div>
+  <div class="sesion" id="sesion" hidden>
+    <div class="quien"><b id="quienNombre"></b><span id="quienRol"></span></div>
+    <button class="mini" id="btnSalir" type="button">Cerrar sesión</button>
+  </div>
+</div></header>
+
+<!-- ───────────────────────── LOGIN ───────────────────────── -->
+<main id="vLogin">
+  <div class="login-wrap">
+    <div>
+      <h2>Ruta 100 FURAG ACC · Diligencie su dependencia y adjunte los soportes</h2>
+      <p class="lead">Cada dependencia responde únicamente las preguntas que le corresponden.
+      La Gerencia Técnica revisa las evidencias y aprueba o devuelve cada pregunta con una
+      observación para su subsanación.</p>
+      <ol class="pasos">
+        <li><span class="n">1</span><div><b>Ingrese con el usuario de su dependencia.</b>
+          Verá solo sus preguntas, con el tipo de respuesta que exige el formulario oficial.</div></li>
+        <li><span class="n">2</span><div><b>Responda y registre el enlace de la evidencia.</b>
+          Suba el soporte a la carpeta de SharePoint de la Gerencia Técnica y pegue aquí el enlace.</div></li>
+        <li><span class="n">3</span><div><b>Envíe a revisión.</b>
+          La pregunta queda en estado <i>Pendiente</i> hasta que la Gerencia Técnica la revise.</div></li>
+        <li><span class="n">4</span><div><b>Subsane lo devuelto.</b>
+          Si la evidencia es rechazada verá el motivo y podrá corregirla y reenviarla.</div></li>
+      </ol>
+      <!--<div class="aviso" id="avisoModo">
+        <b>Modo local.</b> Este navegador guarda su propio avance y no lo comparte con otras
+        dependencias. Para trabajar en equipo, configure el backend siguiendo
+        <code>backend/INSTALACION.md</code> y pegue la URL del Web App en <code>config.js</code>.
+      </div>!-->
+    </div>
+    <form class="tarjeta-login" id="formLogin" autocomplete="off">
+      <h3>Iniciar sesión</h3>
+      <p class="sub">Use el usuario y la contraseña asignados a su dependencia.</p>
+      <div class="error" id="errLogin" hidden></div>
+      <div class="campo">
+        <label for="usuario">Dependencia</label>
+        <select id="usuario" name="usuario" autocomplete="username" required>
+          <option value="">Seleccione su dependencia…</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="clave">Contraseña</label>
+        <input type="password" id="clave" name="clave" autocomplete="current-password" required>
+      </div>
+      <button class="btn" type="submit" style="width:100%">Ingresar</button>
+    </form>
+  </div>
+  <div class="pie-sitio">
+    Agencia Catastral de Cundinamarca · Formulario Único de Reporte de Avances de la Gestión (FURAG).
+    Construido sobre el modelo de datos del tablero MIPG · FURAG.
+  </div>
+</main>
+
+<!-- ───────────────────────── APLICACIÓN ───────────────────────── -->
+<main id="vApp" hidden>
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="barra"><div class="cont" id="barra"></div></div>
+    <div id="contenido"></div>
+  </div>
+  <div class="pie-sitio" id="pieApp"></div>
+</main>
+
+<div id="modales"></div>
+
+<script src="config.js"></script>
+<script src="datos.js"></script>
+<script src="sha256.js"></script>
+<script src="almacen.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
